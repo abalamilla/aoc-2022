@@ -35,7 +35,7 @@
   [input]
   (let [
         sum (get-sorted-sum input)
-        reversed (vec (reverse (sort sum)))
+        reversed (vec (reverse sum))
         top-three (subvec reversed 0 3)
         sum (apply + top-three)]
     sum)
