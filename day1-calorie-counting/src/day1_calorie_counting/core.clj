@@ -2,32 +2,49 @@
   (:gen-class)
   (:require [clojure.string :as str]))
 
-(defn calories-count [accum next-value]
+(defn calories-sum [accum next-value]
   (let [
-        current-value (or (last accum) "0")
-        int-current-value (Integer/parseInt current-value)
-        is-next-value-empty (empty? next-value)
-        int-next-value (if is-next-value-empty 0 (Integer/parseInt next-value))
-        sum (+ int-current-value int-next-value)
-        str-sum (str sum)
-        is-accum-empty (empty? accum)
+        values (str/split next-value #"\n")
+        int-values (map #(Integer/parseInt %) values)
+        sum (apply + int-values)
         ]
-    (if is-next-value-empty
-      (conj accum "0")
-      (if is-accum-empty
-        [str-sum]
-        (conj (pop accum) str-sum))
-      ))
+    (conj accum sum)
+    )
   )
 
-(defn which-elf-to-ask
+(defn get-sorted-sum [input]
+  (let [
+        input-array (str/split input #"\n\n")
+        sum (reduce calories-sum [] input-array)
+        sorted (sort sum)
+        ]
+    sorted
+    )
+  )
+
+(defn max-calories
   [input]
   (let [
-        input-array (str/split input #"\n")
-        calories-count (reduce calories-count [] input-array)
-        int-calories-count (map #(Integer/parseInt %) calories-count)
-        max (reduce max int-calories-count)
-        elf (+ 1 (.indexOf int-calories-count max))
+        sum (get-sorted-sum input)
+        max (last sum)
         ]
-    elf)
+    max)
+  )
+
+(defn top-three
+  [input]
+  (let [
+        sum (get-sorted-sum input)
+        reversed (vec (reverse (sort sum)))
+        top-three (subvec reversed 0 3)
+        sum (apply + top-three)]
+    sum)
+  )
+
+(defn -main [& args]
+  (println args)
+  (let [in (slurp *in*)]
+    (println (max-calories in))
+    (println (top-three in))
+    )
   )
